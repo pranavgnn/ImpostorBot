@@ -12,15 +12,15 @@ exports.config = {
 const fs = require(`fs`)
 const Discord = require(`discord.js`)
 
-const { PREFIX } = require(`../config.json`)
+const { PREFIXES, COLOR } = require(`../config.json`)
 
 let commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 exports.run = async (bot, message, args) => {
     var helpCommand = new Discord.MessageEmbed()
         .setTitle(`Displaying help for`)
-        .setColor(`#eb98ff`)
-        .setFooter(`<> means required.   |   [] means optional.\nFor help with a specific command / category, do ${PREFIX}help [Command / Category]`)
+        .setColor(COLOR)
+        .setFooter(`<> means required.   |   [] means optional.\nFor help with a specific command / category, do ${PREFIXES[0]}help [Command / Category]`)
     var commands = []
     var groups = []
     for (let cmd of commandFiles) {
@@ -31,7 +31,7 @@ exports.run = async (bot, message, args) => {
     helpCommand.setDescription(`${commands.length} commands | ${groups.length} groups`)
     if (!args[0]) {
         for (let group of groups) {
-            helpCommand.addField(`${group.slice(0, 1).toUpperCase() + group.slice(1).toLowerCase()}`, `$help ${group}`, true)
+            helpCommand.addField(`${group.slice(0, 1).toUpperCase() + group.slice(1).toLowerCase()}`, `${PREFIXES[0]}help ${group}`, true)
         }
         helpCommand.setTitle(helpCommand.title + ` all commands.`)
         message.channel.send(helpCommand)
@@ -43,7 +43,7 @@ exports.run = async (bot, message, args) => {
         if (requiredCmd) {
             helpCommand.setTitle(helpCommand.title + ` command ${requiredCmd.config.name}.`)
             helpCommand.addField(`Description`, requiredCmd.config.description)
-            helpCommand.addField(`Usage`, PREFIX + requiredCmd.config.usage)
+            helpCommand.addField(`Usage`, PREFIXES[0] + requiredCmd.config.usage)
             helpCommand.addField(`Category`, requiredCmd.config.category)
             helpCommand.addField(`Server Only`, requiredCmd.config.guildOnly)
             helpCommand.addField(`Bot Staff Only`, requiredCmd.config.staffOnly)

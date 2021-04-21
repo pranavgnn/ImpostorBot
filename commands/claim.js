@@ -34,7 +34,7 @@ exports.run = async (bot, message, args, config) => {
         parent: message.channel.parent
     });
 
-    createdChannel.send(vc.members.map(u=>u).join(` `));
+    createdChannel.send(vc.members.map(u=>u).join(`, `));
 
     const createdVc = await message.guild.channels.create(
         `Code: ${args[0].toUpperCase()}`,
@@ -49,17 +49,31 @@ exports.run = async (bot, message, args, config) => {
     });
 
     await db.set(`claims_${message.author.id}`, {
-            voice: createdVc,
-            guild: vc.guild,
-            user: message.author,
+            voice: {
+                name: createdVc.name,
+                id: createdVc.id
+            },
+            chatChannel: {
+                name: createdChannel.name,
+                id: createdChannel.id
+            },
+            guild: {
+                name: message.guild.name,
+                id: message.guild.id
+            },
+            channel: {
+                id: message.channel.id,
+            },
+            user: {
+                id: message.author.id,
+                tag: message.author.tag,
+            },
             code: args[0].toUpperCase(),
-            channel: message.channel,
-            chatChannel: createdChannel
         }
     );
 
     existingVcs.push(createdVc.id);
     await db.set(`claimchannels`, existingVcs);
 
-    message.channel.send(`✅ **|** You have successfully claimed **${vc.name}**!`);
+    message.channel.send(`✅ **|** You have successfully claimed **${createdChannel}**!`);
 };

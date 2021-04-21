@@ -1,5 +1,4 @@
 const Discord = require('discord.js');
-const fs = require('fs')
 const db = require(`quick.db`)
 
 const config = require('./config.json');
@@ -34,7 +33,6 @@ bot.on('voiceStateUpdate', async (oldUser, newUser) => {
         if (user.id !== claimData.user.id)
             user.voice.setMute(newUser.selfMute, `Claim by ${claimData.user.tag}`);
     });
-
 });
 
 bot.on('message', async message => {
