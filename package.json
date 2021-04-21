@@ -19,6 +19,7 @@
   "homepage": "https://github.com/pranvexploder/ImpostorBot#readme",
   "dependencies": {
     "discord.js": "^12.5.3",
+    "dotenv": "^8.2.0",
     "quick.db": "^7.1.3"
   }
 }

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const Discord = require('discord.js');
 const db = require(`quick.db`)
 
@@ -86,4 +87,4 @@ bot.on('message', async message => {
     cmd.run(bot, message, args, config);
 });
 
-bot.login(config.TOKEN);
+bot.login(process.env.TOKEN);
