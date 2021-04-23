@@ -1,6 +1,5 @@
 exports.config = {
     name: "ping",
-    cooldown: 3,
     guildOnly: false,
     staffOnly: false,
     description: "Mentions the bot's and the API's current latency. Also used to check if the bot is alive.",

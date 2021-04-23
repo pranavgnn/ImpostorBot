@@ -1,9 +1,9 @@
 require('dotenv').config();
 const Discord = require('discord.js');
-const db = require(`quick.db`)
 
 const config = require('./config.json');
 const logs = require(`./support/botLogs`);
+const db = require("./support/database.js")
 
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
@@ -17,22 +17,22 @@ bot.on('ready', () => {
             logs.loginLog(bot);
         })
         .catch(console.error);
-
 });
 
 require(`./support/reload.js`).deleteAllCache(`./commands`, bot);
 
 bot.on('voiceStateUpdate', async (oldUser, newUser) => {
-    const claimData = await db.fetch(`claims_${oldUser.id}`);
-    if (!claimData) return;
-    if (!newUser.channel || claimData.voice.id !== newUser.channel.id) {
-        require(`./commands/unclaim`).unclaim(bot, newUser);
-        return bot.channels.cache.get(claimData.channel.id).send(`<@!${claimData.user.id}>, you were automatically unclaimed from the voice channel **#${claimData.voice.name}** with the room code **${claimData.code}** in the server **${claimData.guild.name}** because you either disconnected or switched voice channels.`)
+    const foundClaim = await db.fetch(db.claims, {_id: newUser.id})
+    if (!foundClaim) return;
+
+    if (!newUser.channel || foundClaim.voiceId !== newUser.channel.id) {
+        require(`./commands/unclaim.js`).unclaim(bot, foundClaim);
+        return bot.channels.cache.get(foundClaim.channelId).send(`<@!${foundClaim._id}>, you were automatically unclaimed from the voice channel **#${oldUser.channel.name}** with the room code **${foundClaim.code}** in the server **${oldUser.guild.name}** because you either disconnected or switched voice channels.`)
     };
 
     newUser.channel.members.forEach(user => {
-        if (user.id !== claimData.user.id)
-            user.voice.setMute(newUser.selfMute, `Claim by ${claimData.user.tag}`);
+        if (user.id !== foundClaim._id)
+            user.voice.setMute(newUser.selfMute, `Claim by ${foundClaim._id}`);
     });
 });
 
@@ -74,14 +74,6 @@ bot.on('message', async message => {
     if (cmd.config.guildOnly && message.channel.type !== 'text')
         return message.reply(`I can't execute the ${cmd.config.name} command inside DMs!`);
 
-    // Cooldown
-    const inCooldown = require(`./support/cooldowns.js`)(cmd, message);
-    if (inCooldown)
-        return message.channel.send(new Discord.MessageEmbed()
-            .setColor(`#ff0000`)
-            .setTitle(`🚫 | Hey, hey! Chill!`)
-            .setDescription(`You're on a slowmode! Please wait ${require(`./modules/secondsToDhms.js`)(inCooldown)} to execute the ${cmd.config.name} command again.`)
-        );
     // Run the command
     logs.commandLog(bot, cmd, args, message);
     cmd.run(bot, message, args, config);
