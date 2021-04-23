@@ -55,5 +55,5 @@ exports.run = async (bot, message, args, config) => {
         code: args[0].toUpperCase()
     }).save();
 
-    message.channel.send(`✅ **|** You have successfully claimed the Voice Channel: **$#${createdVc.name}**!`);
+    message.channel.send(`✅ **|** You have successfully claimed the Voice Channel: **#${createdVc.name}**!`);
 };
