@@ -17,9 +17,20 @@
   ],
   "env": {
     "TOKEN": {
-      "description": "Token for discord bot."
+      "description": "Token for discord bot"
     },
     "DATABASE": {
       "description": "URL for the database"
-  }
+    },
+    "WEBHOOK_ID": {
+      "description": "Webhook ID for logs"
+    },
+    "WEBHOOK_TOKEN": {
+      "description": "Token for Logs Webhook"
+    },
+    "DATA_BACKUP_CHANNEL_ID": {
+      "description": "Channel ID for the data backup of the bot"
+    },
+    "BOT_GUILD_ID": { 
+      "description": "ID of the bot's main guild"
 }
