@@ -8,5 +8,5 @@ exports.config = {
 };
 
 exports.run = async (bot, message, _, config) => {
-   message.channel.send("https://discord.com/oauth2/authorize?client_id=769552569323749376&scope=bot&permissions=8")
+   message.channel.send(`https://discord.com/oauth2/authorize?client_id=${bot.user.id}&scope=bot&permissions=8`)
 };
