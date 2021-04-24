@@ -1,0 +1,25 @@
+{
+  "name": "ImpostorBot",
+  "description": "A bot that is a great combination to have while playing Among Us along with Discord voice chat.",
+  "repository": "https://github.com/pranvexploder/ImpostorBot",
+  "logo": "https://images-ext-2.discordapp.net/external/hD9Xd690Hq-GPURnBd5IxCMMf-bns1mmolEsS1lfwfQ/https/cdn.discordapp.com/avatars/769552569323749376/52d42c4623eca4ee69b4c223a47522a2.webp?width=115&height=115",
+  "keywords": ["node","discord","bot","slash commands"],
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "TOKEN": {
+      "description": "Token for discord bot."
+    },
+    "DATABASE": {
+      "description": "URL for the database"
+  }
+}
