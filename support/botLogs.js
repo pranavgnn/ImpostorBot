@@ -2,7 +2,7 @@ const Discord = require(`discord.js`);
 
 const config = require(`../config.json`);
 
-const whClient =  new Discord.WebhookClient(`770149584894558209`, `r1DICgnfYuSx0vO-HZLHAWzDXSKHzOZoqDrUsN3t0iDeX-j7dZdbWw6SQyCZbeTIml3l`);
+const whClient =  new Discord.WebhookClient(process.env.WEBHOOK_ID, process.env.WEBHOOK_TOKEN);
 
 exports.loginLog = async (bot) => {
     whClient.send(new Discord.MessageEmbed()
