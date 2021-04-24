@@ -1,10 +1,19 @@
 exports.config = {
     name: "claim",
-    guildOnly: false,
-    staffOnly: false,
     description: "Claims a Voice Channel for you, meaning you can server mute everyone when you mute yourself.",
+    options: [
+        {
+            name: "Code",
+            description: "Your Among Us room  code (bottom-center of the screen).",
+            type: 3,
+            required: true,
+            choices: [],
+        }
+    ],
     usage: "claim <Room Code>",
     category: "Utility",
+    guildOnly: false,
+    staffOnly: false,
 };
 
 const db = require("../support/database.js");

@@ -1,6 +1,30 @@
 exports.config = {
     name: "eval",
     aliases: ["evaluate"],
+    options: [
+        {
+            name: "Type",
+            description: "Either \"Shell\" or \"Code\".",
+            type: 3,
+            required: true,
+            choices: [
+                {
+                    name: "Code",
+                    value: "code"
+                },
+                {
+                    name: "Shell",
+                    value: "shell"
+                }
+            ],
+        },
+        {
+            name: "Line",
+            description: "The line you want to evaluate.",
+            type: 3,
+            required: true
+        }
+    ],
     guildOnly: false,
     staffOnly: true,
     description: "Evaluates a command on the host's system.",

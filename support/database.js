@@ -1,6 +1,6 @@
 const mongoose = require(`mongoose`);
 
-mongoose.connect('mongodb+srv://ImpostorBot:rSDhdzPFtLbkofgy@cluster0.scips.mongodb.net/database', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(`mongodb+srv://ImpostorBot:${process.env.DATABASE_PASS}@cluster0.scips.mongodb.net/database`, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 
 const claimsSchema = new mongoose.Schema({

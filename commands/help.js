@@ -1,6 +1,15 @@
 exports.config = {
     name: "help",
     aliases: ["commands", "cmds"],
+    options: [
+        {
+            name: "name",
+            description: "Any command or category name you want help from.",
+            type: 3,
+            required: false,
+            choices: [],
+        }
+    ],
     cooldown: 5,
     guildOnly: true,
     staffOnly: false,

@@ -1,7 +1,7 @@
 const fs = require(`fs`);
 const { MessageEmbed } = require(`discord.js`);
 
-const supportedDirs = ["./support", "./modules", "./commands", "./events", "./node_modules", "./db-models", "./icon"];
+const supportedDirs = ["./support", "./modules", "./commands", "./node_modules", "./icon"];
 
 //## Cache delete function ##\\
 exports.deleteAllCache = (path, bot) => {
@@ -12,6 +12,18 @@ exports.deleteAllCache = (path, bot) => {
         delete require.cache[require.resolve(`.${path}/${file}`)];
         let required = require(`.${path}/${file}`);
         if (required.config) bot.commands.set(required.config.name, required);
+        
+        bot.guilds.cache.forEach(guild => {
+            const postData = {
+                name: required.config.name,
+                description: required.config.description,
+            }
+            if (required.config.options && required.config.options[0])
+                postData.options = required.config.options;
+            bot.api.applications(bot.user.id).guilds(guild.id).commands.post({
+                data: postData
+            });
+        });
     };
     console.log(`Done! ${files.length} files from "${path}" directory were successfully loaded!`);
 };

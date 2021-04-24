@@ -1,6 +1,7 @@
 require('dotenv').config();
 require('./support/server.js').init();
 const Discord = require('discord.js');
+const slashCommands = require("slash-commands-discord");
 
 const config = require('./config.json');
 const logs = require(`./support/botLogs`);
@@ -16,14 +17,24 @@ bot.on('ready', () => {
         .then(() => {
             console.log(`Changed the presence of ${bot.user.username} to "${bot.user.presence.activities[0].name}".`);
             logs.loginLog(bot);
+            require(`./support/reload.js`).deleteAllCache(`./commands`, bot);
         })
         .catch(console.error);
 });
 
-require(`./support/reload.js`).deleteAllCache(`./commands`, bot);
+//require(`./support/reload.js`).deleteAllCache(`./commands`, bot);
+
+const staffOnly = (cmd, authorId) => {
+    if (cmd.config.staffOnly)
+        if (authorId !== config.OWNER && !config.STAFF.includes(authorId))
+            return new Discord.MessageEmbed()
+                .setTitle(`Error`)
+                .setDescription(`Staff access only.\nAccess denied.`)
+                .setColor(`ff0000`)
+}
 
 bot.on('voiceStateUpdate', async (oldUser, newUser) => {
-    const foundClaim = await db.fetch(db.claims, {_id: newUser.id})
+    const foundClaim = await db.fetch(db.claims, { _id: newUser.id })
     if (!foundClaim) return;
 
     if (!newUser.channel || foundClaim.voiceId !== newUser.channel.id) {
@@ -38,7 +49,6 @@ bot.on('voiceStateUpdate', async (oldUser, newUser) => {
 });
 
 bot.on('message', async message => {
-
     //Ignore bots amd webhooks
     if (message.author.bot) return;
     if (message.webhookID) return;
@@ -63,13 +73,8 @@ bot.on('message', async message => {
     if (!cmd) return logs.noCommandLog(bot, command, args, message);
 
     // Staff only commands
-    if (cmd.config.staffOnly)
-        if (message.author.id !== config.OWNER && !config.STAFF.includes(message.author.id))
-            return message.channel.send(new Discord.MessageEmbed()
-                .setTitle(`Error`)
-                .setDescription(`Staff access only.\nAccess denied.`)
-                .setColor(`ff0000`)
-            );
+    let isStaffOnly = staffOnly(cmd, message.author.id);
+    if (isStaffOnly) message.channel.send(isStaffOnly);
 
     // Guild only commands
     if (cmd.config.guildOnly && message.channel.type !== 'text')
@@ -78,6 +83,52 @@ bot.on('message', async message => {
     // Run the command
     logs.commandLog(bot, cmd, args, message);
     cmd.run(bot, message, args, config);
+});
+
+bot.ws.on('INTERACTION_CREATE', async interaction => {
+    const command = interaction.data.name.toLowerCase();
+    const args = interaction.data.options;
+
+    var cmd = bot.commands.get(command);
+
+    // Staff only commands
+    let isStaffOnly = staffOnly(cmd, interaction.member.user.id);
+    if (isStaffOnly)
+        bot.api.interactions(interaction.id, interaction.token).callback.post({
+            data: {
+                type: 4,
+                data: { embeds: [isStaffOnly] }
+            }
+        });
+
+        let channel = bot.channels.cache.get(interaction.channel_id);
+        let user = channel.guild.members.cache.get(interaction.member.user.id);
+        user.tag = interaction.member.user.username + "#" + interaction.member.user.discriminator;
+        console.log(channel, user)
+        let message = {
+            member: user,
+            author: user,
+            channel: {
+                send: (parse) => {
+                    let content = {
+                        data: {
+                            type: 4,
+                            data: {}
+                        }
+                    };
+                    if (typeof parse == "string") content.data.data.content = parse;
+                    else content.data.data.embeds = [parse];
+
+                    bot.api.interactions(interaction.id, interaction.token).callback.post(content);
+                },
+                parent: channel.parent,
+                id: channel.id,
+            },
+            guild: channel.guild
+        };
+    
+        logs.commandLog(bot, cmd, args, message);
+        cmd.run(bot, message, args, config);
 });
 
 bot.login(process.env.TOKEN);
