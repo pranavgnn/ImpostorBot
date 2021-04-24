@@ -34,4 +34,5 @@
     "BOT_GUILD_ID": { 
       "description": "ID of the bot's main guild"
     }
+  }
 }
