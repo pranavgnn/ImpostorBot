@@ -87,7 +87,7 @@ bot.on('message', async message => {
 
 bot.ws.on('INTERACTION_CREATE', async interaction => {
     const command = interaction.data.name.toLowerCase();
-    const args = interaction.data.options;
+    const args = interaction.data.options || [];
 
     var cmd = bot.commands.get(command);
 
@@ -102,9 +102,9 @@ bot.ws.on('INTERACTION_CREATE', async interaction => {
         });
 
         let channel = bot.channels.cache.get(interaction.channel_id);
-        let user = channel.guild.members.cache.get(interaction.member.user.id);
+        let user = interaction.member.user;
         user.tag = interaction.member.user.username + "#" + interaction.member.user.discriminator;
-        console.log(channel, user)
+        console.log(interaction)
         let message = {
             member: user,
             author: user,
@@ -123,6 +123,7 @@ bot.ws.on('INTERACTION_CREATE', async interaction => {
                 },
                 parent: channel.parent,
                 id: channel.id,
+                createdTimestamp: new Date(),
             },
             guild: channel.guild
         };
